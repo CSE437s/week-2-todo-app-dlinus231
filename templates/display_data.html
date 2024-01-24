@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Data</title>
+</head>
+
+<body>
+    <h1>Previous To-Do Lists</h1>
+
+    <script>
+// Function to display form data
+function displayFormData() {
+    // Retrieve stored data from localStorage
+    var storedData = localStorage.getItem('formData');
+    var formData = storedData ? parseQueryString(storedData) : {};
+
+    // Display each form field's information
+    for (var key in formData) {
+        if (formData.hasOwnProperty(key) && formData[key] != "") {
+            var fieldInfo = formData[key];
+            var checkboxStatus = fieldInfo.isChecked ? 'Complete' : 'Incomplete';
+            var textValue = fieldInfo.textValue;
+
+            var fieldInfoString = 'Task: ' + textValue + " (" + checkboxStatus + ")";
+
+            var paragraph = document.createElement('p');
+            if(textValue !== "") {
+                paragraph.textContent = fieldInfoString;
+            }
+
+            document.body.appendChild(paragraph);
+        }
+    }
+
+    // Add a button to redirect back to to-do-list.html with storing data
+    var backButton = document.createElement('button');
+    backButton.textContent = 'Go Back to To-Do List';
+    backButton.addEventListener('click', function () {
+        // Store data before redirecting
+        storeFormData(formData);
+        window.location.href = '../to-do-list.html';
+    });
+
+    document.body.appendChild(backButton);
+}
+
+// Function to parse the query string and extract form data
+function parseQueryString(queryString) {
+    var formData = {};
+
+    queryString.split('&').forEach(function (pair) {
+        var keyValue = pair.split('=');
+        var key = keyValue[0];
+        var value = keyValue[1] ? JSON.parse(decodeURIComponent(keyValue[1])) : null;
+
+        formData[key] = value;
+    });
+
+    return formData;
+}
+
+// Function to store form data
+function storeFormData(data) {
+    var storedData = JSON.stringify(data);
+    localStorage.setItem('previousFormData', storedData);
+}
+
+// Call the displayFormData function when the page loads
+window.onload = displayFormData;
+
+    </script>
+</body>
+</html>

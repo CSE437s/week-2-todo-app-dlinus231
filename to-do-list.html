@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkbox Buttons with Text Inputs</title>
+</head>
+
+<body>
+    <form id="checkboxForm">
+        <label>
+            <h1 contenteditable="true">
+                To-Do List
+            </h1>
+        </label>
+        <div id="checkboxContainer"> 
+            <label style="display: block;">
+                <input type="checkbox" name="option1">
+                <input type="text" name="text1">
+            </label>
+        </div>
+        <br>
+        <button type="button" onclick="addCheckbox()">Add Another Checkbox</button>
+        <br>
+        <button type="button" onclick="submitForm()">Submit</button>
+    </form>
+
+    <script>
+        function addCheckbox() {
+            console.log(localStorage.getItem('previousFormData'))
+            // Create a new checkbox and text input field
+            var newCheckbox = document.createElement('input');
+            newCheckbox.type = 'checkbox';
+            var newText = document.createElement('input');
+            newText.type = 'text';
+
+            // Generate a unique name for the new checkbox and text input
+            var newCheckboxName = 'option' + (document.querySelectorAll('input[type="checkbox"]').length + 1);
+            var newTextName = 'text' + (document.querySelectorAll('input[type="text"]').length + 1);
+
+            newCheckbox.name = newCheckboxName;
+            newText.name = newTextName;
+
+            // Create a new label and set its display to block
+            var newLabel = document.createElement('label');
+            newLabel.style.display = 'block';
+
+            // Append the new checkbox and text input to the new label
+            newLabel.appendChild(newCheckbox);
+            newLabel.appendChild(newText);
+
+            // Append the new label to the checkboxContainer
+            document.getElementById('checkboxContainer').appendChild(newLabel);
+        }
+
+        function submitForm() {
+            var formData = {};
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            
+            checkboxes.forEach(function (checkbox) {
+                var checkboxName = checkbox.name;
+                var textInputName = 'text' + checkboxName.substr(6);  // Extract number from checkbox name
+                var textInput = document.querySelector('input[name="' + textInputName + '"]');
+                
+                formData[checkboxName] = {
+                    isChecked: checkbox.checked,
+                    textValue: textInput.value
+                };
+            });
+
+            // Convert formData to a query string
+            var queryString = Object.keys(formData).map(function(key) {
+                return key + '=' + encodeURIComponent(JSON.stringify(formData[key]));
+            }).join('&');
+
+            // Store the formData in localStorage
+            localStorage.setItem('formData', queryString);
+
+            // Redirect to the display_data.html page
+            window.location.href = 'templates/display_data.html';
+        }
+
+        // Function to populate checkboxes on page startup
+        function populateCheckboxesFromLocalStorage() {
+            var storedFormData = localStorage.getItem('previousFormData');
+            if (storedFormData) {
+                var formData = JSON.parse(decodeURIComponent(storedFormData));
+                for (var key in formData) {
+                    if (formData.hasOwnProperty(key)) {
+                        // TODO: was going to use this to recreate the checkboxes saved previously
+                    }
+                }
+            }
+        }
+
+        // Call populateCheckboxesFromLocalStorage() on page startup
+        populateCheckboxesFromLocalStorage();
+    </script>
+</body>
+</html>
